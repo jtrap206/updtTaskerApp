@@ -32,16 +32,21 @@ class TaskService with ListenableServiceMixin {
     });
   }
 
+  //gets local path of the app
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
 
+  //represents the local storage file by combining
+  //local path and file name
+  //this is where the data is stored
   Future<File> get _localFile async {
     final path = await _localPath;
     return File('$path/$_fileName');
   }
 
+  //ensures json file is created
   Future<void> _initializeFile() async {
     final file = await _localFile;
     if (!await file.exists()) {
