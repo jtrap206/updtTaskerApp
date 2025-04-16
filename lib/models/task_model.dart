@@ -35,6 +35,8 @@ class Task extends Equatable {
     ];
   }
 
+  //converts task into JSON Map
+  //used to save task in database
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       TaskKeys.id: id,
@@ -47,6 +49,8 @@ class Task extends Equatable {
     };
   }
 
+  //converts JSON Map into Task
+  //used to get task from database
   factory Task.fromJson(Map<String, dynamic> map) {
     return Task(
       id: map[TaskKeys.id],
@@ -59,6 +63,7 @@ class Task extends Equatable {
     );
   }
 
+  //creates a new Task object that is a modification of orriginal task
   Task copyWith({
     int? id,
     String? title,

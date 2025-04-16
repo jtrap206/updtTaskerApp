@@ -103,7 +103,7 @@ class TaskService with ListenableServiceMixin {
     TaskCategories? category,
     bool? isCompleted,
   }) async {
-    final index = _tasks.indexWhere((task) => task.id == id);
+    final index = _tasks.indexWhere((task) => task.id == id); //find task by ID
     if (index != -1) {
       final updatedTask = _tasks[index].copyWith(
         title: title,

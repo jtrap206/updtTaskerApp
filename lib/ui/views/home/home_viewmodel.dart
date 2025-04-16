@@ -75,8 +75,7 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> navigateToTaskSummary() async {
-    await _navigationService
-        .navigateToTaskSummaryView(); 
+    await _navigationService.navigateToTaskSummaryView();
   }
 
   void showDialog() {

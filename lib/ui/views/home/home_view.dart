@@ -5,6 +5,7 @@ import 'package:tasker/Widgets/display_white_text.dart';
 import 'package:tasker/Widgets/task_details.dart';
 import 'package:tasker/Widgets/task_tile.dart';
 import 'package:tasker/app/app.locator.dart';
+import 'package:tasker/app/app.logger.dart';
 import 'package:tasker/service/task_service.dart';
 import 'package:tasker/ui/common/app_colors.dart';
 import 'package:tasker/ui/common/ui_helpers.dart';
@@ -31,10 +32,13 @@ class HomeView extends StackedView<HomeViewModel> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.summarize, color: Colors.white),
-                  onPressed: () => viewModel.navigateToTaskSummary(),
-                  tooltip: 'View Task Summary',
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: const Icon(Icons.summarize, color: Colors.white),
+                    onPressed: () => viewModel.navigateToTaskSummary(),
+                    tooltip: 'View Task Summary',
+                  ),
                 ),
                 const DisplayWhiteText(
                   text: "TASKER",
@@ -117,14 +121,15 @@ class _DisplayListOfTasks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final deviceSize = context.deviceSize;
+    final logger = getLogger('home_view');
     final height =
         isCompleted ? deviceSize.height * 0.25 : deviceSize.height * 0.3;
     final tasks = isCompleted
         ? viewModel.tasks.where((task) => task.isCompleted).toList()
         : viewModel.tasks.where((task) => !task.isCompleted).toList();
-    print('--------------------');
-    print(isCompleted);
-    print(tasks.length);
+    logger.wtf(tasks);
+    logger.w(isCompleted);
+    logger.d(tasks.length);
     return CommonContainers(
         height: height,
         child: tasks.isEmpty
