@@ -31,6 +31,8 @@ class CreateTaskViewView extends StackedView<CreateTaskViewViewModel> {
         body: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(20),
+          child: Form(
+            key: viewModel.formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -38,6 +40,15 @@ class CreateTaskViewView extends StackedView<CreateTaskViewViewModel> {
                 title: "Task Title",
                 hintText: "Enter task title",
                 controller: viewModel.titleController,
+                validator: (value){
+                  if (value == null || value.trim().isEmpty){
+                    return 'Please enter a task title';
+                  }
+                  if (value.trim().length > 100){
+                    return 'Title must be 100 characters or less';
+                  }
+                  return null;
+                }
               ),
               const Gap(16),
               _SelectCategory(viewModel: viewModel),
@@ -49,6 +60,12 @@ class CreateTaskViewView extends StackedView<CreateTaskViewViewModel> {
                 hintText: "Enter task notes",
                 maxlines: 6,
                 controller: viewModel.noteController,
+                validator: (value){
+                  if (value != null && value.trim().length > 500){
+                    return 'Notes must be 500 characters or less';
+                  }
+                  return null;
+                }
               ),
               const Gap(16),
               ElevatedButton(
@@ -62,7 +79,8 @@ class CreateTaskViewView extends StackedView<CreateTaskViewViewModel> {
               ),
             ],
           ),
-        ));
+        ))
+    );
   }
 
   @override

@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:stacked/stacked.dart';
@@ -16,6 +17,7 @@ class TaskService with ListenableServiceMixin {
   List<Task> _tasks = [];
   List<Task> get tasks => _tasks;
   Timer? _syncTimer; // Timer to sync data periodically
+  final logger = Logger();
 
   static const MethodChannel _channel =
       MethodChannel('com.example.tasker/reminders');
@@ -95,8 +97,10 @@ class TaskService with ListenableServiceMixin {
     print(newTask.toString());
     _tasks.add(newTask);
     await _saveTasks();
-    await _setAndroidReminder(newTask);
-    notifyListeners();
+    if(!isCompleted){
+      await _setAndroidReminder(newTask);
+    } 
+      notifyListeners();
   }
 
   Future<void> updateTask(
@@ -120,9 +124,12 @@ class TaskService with ListenableServiceMixin {
       );
       _tasks[index] = updatedTask;
       await _saveTasks();
-      if (time != null || date != null) {
+      if(isCompleted == true){
+        await _cancelAndroidReminder(id);
+      }else if (time != null || date != null){
         await _setAndroidReminder(updatedTask);
       }
+
       notifyListeners();
     }
   }
@@ -130,6 +137,7 @@ class TaskService with ListenableServiceMixin {
   Future<void> deleteTask(int id) async {
     _tasks.removeWhere((task) => task.id == id);
     await _saveTasks();
+    await _cancelAndroidReminder(id);
     notifyListeners();
   }
 
@@ -181,6 +189,16 @@ class TaskService with ListenableServiceMixin {
       print('Reminder set for ${task.title} at $dueDateTime');
     } catch (e) {
       print('Error setting reminder: $e');
+    }
+  }
+
+  //method to cancel native Android reminder
+  Future<void> _cancelAndroidReminder(int id)async{
+    try{
+      await _channel.invokeMethod('cancelReminder', {'id': id});
+      print('Reminder cancelled for task with ID: $id');
+    }catch(e){
+      logger.wtf('Error cancelling reminder: $e');
     }
   }
 

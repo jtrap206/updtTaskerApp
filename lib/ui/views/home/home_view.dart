@@ -77,7 +77,8 @@ class HomeView extends StackedView<HomeViewModel> {
                       ElevatedButton(
                         style: ButtonStyle(
                             backgroundColor:
-                                MaterialStatePropertyAll(colors.primary)),
+                                MaterialStatePropertyAll(colors.primary)
+                        ),
                         onPressed: () async {
                           final result = await viewModel.navigateToCreateTask();
                           if (result == true) {

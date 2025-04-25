@@ -11,7 +11,8 @@ class CommonTextFields extends StatelessWidget {
     this.controller,
     this.maxlines,
     this.suffixIcon,
-    this.readOnly = false,
+    this.readOnly = false, 
+    this.validator,
   });
 
   final String title;
@@ -20,6 +21,7 @@ class CommonTextFields extends StatelessWidget {
   final int? maxlines;
   final Widget? suffixIcon;
   final bool readOnly;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class CommonTextFields extends StatelessWidget {
           style: context.textTheme.titleLarge,
         ),
         const Gap(10),
-        TextField(
+        TextFormField(
           readOnly: readOnly,
           controller: controller,
           onTapOutside: (event) {
@@ -44,6 +46,7 @@ class CommonTextFields extends StatelessWidget {
             suffixIcon: suffixIcon,
           ),
           onChanged: (value) {},
+          validator: validator
         )
       ],
     );

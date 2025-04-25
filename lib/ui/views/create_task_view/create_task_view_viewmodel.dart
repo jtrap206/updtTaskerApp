@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:tasker/app/app.dialogs.dart';
 import 'package:tasker/app/app.locator.dart';
 import 'package:tasker/service/task_service.dart';
 import 'package:tasker/utils/task_categories.dart';
@@ -10,12 +9,12 @@ import 'package:tasker/utils/task_categories.dart';
 class CreateTaskViewViewModel extends BaseViewModel {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   late DateTime _selectedDate;
   late TimeOfDay _selectedTime;
   TaskCategories _selectedCategory = TaskCategories.low;
 
   final TaskService _taskService = locator<TaskService>();
-  final DialogService _dialogService = locator<DialogService>();
   final NavigationService _navigationService = locator<NavigationService>();
 
   TaskCategories get selectedCategory => _selectedCategory;
@@ -73,17 +72,9 @@ class CreateTaskViewViewModel extends BaseViewModel {
   }
 
   Future<void> saveTask() async {
+    if (formKey.currentState!.validate()){
     setBusy(true);
     try {
-      if (titleController.text.trim().isEmpty) {
-        await _dialogService.showCustomDialog(
-          variant: DialogType.infoAlert,
-          title: 'Error',
-          description: 'Please enter a title',
-        );
-        setBusy(false);
-        return;
-      }
       final timeString =
           '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}';
       final dateString = DateFormat('yyyy-MM-dd').format(_selectedDate);
@@ -102,6 +93,7 @@ class CreateTaskViewViewModel extends BaseViewModel {
       print('Error saving task: $e');
     } finally {
       setBusy(false);
+    }
     }
   }
 

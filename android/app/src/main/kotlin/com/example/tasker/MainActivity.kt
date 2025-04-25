@@ -35,15 +35,25 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            if (call.method == "setReminder") {
-                val id = call.argument<Int>("id") ?: 0
-                val title = call.argument<String>("title") ?: "Task"
-                val dueTime = call.argument<Long>("dueTime") ?: 0L
+            when (call.method) {
+                "setReminder" -> {
+                    val id = call.argument<Int>("id") ?: 0
+                    val title = call.argument<String>("title") ?: "Task"
+                    val dueTime = call.argument<Long>("dueTime") ?: 0L
 
-                setReminder(id, title, dueTime)
-                result.success("Reminder set successfully")
-            } else {
-                result.notImplemented()
+                    setReminder(id, title, dueTime)
+                    result.success("Reminder set successfully")
+                }
+
+                "cancelReminder" -> {
+                    val id = call.argument<Int>("id") ?: 0
+                    cancelReminder(id)
+                    result.success("Reminder cancelled")
+                }
+
+                else -> {
+                    result.notImplemented()
+                }
             }
         }
     }
@@ -76,5 +86,18 @@ class MainActivity : FlutterActivity() {
             dueTime,
             pendingIntent
         )
+    }
+
+    private fun cancelReminder(id: Int){
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, ReminderBroadcastReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            id,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
     }
 }
